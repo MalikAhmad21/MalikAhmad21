@@ -2,10 +2,6 @@
 🔭 I’m currently working on App Development<br>🌱 I’m currently Study Computer Science
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/MalikAhmad21/MalikAhmad21/output/snake-dark.svg" alt="Snake animation" />
-</div>
-
-<div align="center">
   <img src="https://raw.githubusercontent.com/MalikAhmad21/MalikAhmad21/output/shooting-game.svg" alt="Shooting Game Animation" width="800" />
 </div>
 
