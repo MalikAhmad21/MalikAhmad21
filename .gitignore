@@ -1,3 +1,8 @@
 # Generated files (created by GitHub Actions)
 shooting-game.svg
 dist/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
