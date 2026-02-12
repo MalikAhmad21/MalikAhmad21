@@ -18,6 +18,8 @@ GUN_WIDTH = 30
 GUN_HEIGHT = 40
 BULLET_RADIUS = 4
 ANIMATION_DURATION = 20  # Total animation duration in seconds
+BULLET_SPREAD_RADIUS = 100  # Horizontal spread of bullets from center
+MIN_HIT_TIME_BUFFER = 2  # Minimum seconds before animation end for box hits
 
 # GitHub contribution colors (darker to lighter green)
 COLORS = ["#0e4429", "#006d32", "#26a641", "#39d353"]
@@ -59,8 +61,8 @@ def generate_svg():
     bullets = []
     for i in range(num_bullets):
         start_time = i * (ANIMATION_DURATION / num_bullets)
-        # Vary x position slightly around center
-        bullet_x = CANVAS_WIDTH // 2 + random.randint(-100, 100)
+        # Vary x position slightly around center for visual variety
+        bullet_x = CANVAS_WIDTH // 2 + random.randint(-BULLET_SPREAD_RADIUS, BULLET_SPREAD_RADIUS)
         
         bullets.append({
             'id': f'bullet_{i}',
@@ -107,8 +109,8 @@ def generate_svg():
     
     # Add boxes with hit animations
     for i, box in enumerate(boxes):
-        # Random hit time
-        hit_time = random.uniform(0.5, ANIMATION_DURATION - 2)
+        # Random hit time (ensure enough buffer before animation end)
+        hit_time = random.uniform(0.5, ANIMATION_DURATION - MIN_HIT_TIME_BUFFER)
         hit_duration = 0.5
         
         svg += f'''    <rect id="{box['id']}" x="{box['x']}" y="{box['y']}" width="{BOX_SIZE}" height="{BOX_SIZE}" 
