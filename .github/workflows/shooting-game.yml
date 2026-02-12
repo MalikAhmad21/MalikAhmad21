@@ -1,0 +1,46 @@
+name: Generate Shooting Game Animation
+
+on:
+  # Run automatically at 00:00 UTC every day
+  schedule:
+    - cron: "0 0 * * *"
+  
+  # Run on every push to main branch
+  push:
+    branches:
+      - main
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Generate shooting game SVG
+        run: |
+          python3 generate_shooting_game.py
+          mkdir -p dist
+          mv shooting-game.svg dist/shooting-game.svg
+      
+      - name: Push shooting game to output branch
+        uses: crazy-max/ghaction-github-pages@v3
+        with:
+          target_branch: output
+          build_dir: dist
+          keep_history: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

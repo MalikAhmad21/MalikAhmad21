@@ -5,6 +5,10 @@
   <img src="https://raw.githubusercontent.com/MalikAhmad21/MalikAhmad21/output/snake-dark.svg" alt="Snake animation" />
 </div>
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/MalikAhmad21/MalikAhmad21/output/shooting-game.svg" alt="Shooting Game Animation" width="800" />
+</div>
+
 ## 🌐 Socials:
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/malik-ahmad-16b829307) [![email](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white)](mailto:malik.ahmad2165@gmail.com) 
 
