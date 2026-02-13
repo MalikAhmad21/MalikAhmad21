@@ -72,7 +72,7 @@ def generate_svg():
 
     svg += "\n    </g>\n"
 
-    # Gun group (so barrel + base move together)
+    # Gun group (so barrel + base + bullets move together)
     svg += f'''
     <!-- Gun -->
     <g id="gun">
@@ -95,38 +95,31 @@ def generate_svg():
               width="{GUN_WIDTH}"
               height="{GUN_HEIGHT - BARREL_HEIGHT}"
               fill="{GUN_COLOR}" rx="6"/>
-    </g>
 '''
 
-    # Bullets
-    for i in range(8):
-        delay = i * 1.2
-          # Bullets inside the gun group
-    svg += f'''
-    <!-- Bullets -->
-'''
+    # Bullets inside gun group
     for i in range(8):
         delay = i * 1.2
         svg += f'''
-    <circle cx="{gun_start_x + GUN_WIDTH//2}"
-            cy="{gun_y}"
-            r="{BULLET_RADIUS}"
-            fill="{BULLET_COLOR}">
-        <animate attributeName="cy"
-                 from="{gun_y}"
-                 to="40"
-                 dur="2s"
-                 begin="{delay}s"
-                 repeatCount="indefinite"/>
-        <animate attributeName="opacity"
-                 values="0;1;1;0"
-                 dur="2s"
-                 begin="{delay}s"
-                 repeatCount="indefinite"/>
-    </circle>
+        <circle cx="{gun_start_x + GUN_WIDTH//2}"
+                cy="{gun_y}"
+                r="{BULLET_RADIUS}"
+                fill="{BULLET_COLOR}">
+            <animate attributeName="cy"
+                     from="{gun_y}"
+                     to="40"
+                     dur="2s"
+                     begin="{delay}s"
+                     repeatCount="indefinite"/>
+            <animate attributeName="opacity"
+                     values="0;1;1;0"
+                     dur="2s"
+                     begin="{delay}s"
+                     repeatCount="indefinite"/>
+        </circle>
 '''
 
-
+    svg += "\n    </g>\n"  # close gun group
     svg += "\n</svg>"
 
     return svg
