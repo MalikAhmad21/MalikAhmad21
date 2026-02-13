@@ -78,7 +78,7 @@ def generate_svg():
     <g id="gun">
         <animateTransform attributeName="transform"
             type="translate"
-           values="{gun_start_x} 0; {gun_end_x} 0"
+            values="-200 0; 200 0; -200 0"
             dur="10s"
             repeatCount="indefinite"/>
 
