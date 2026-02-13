@@ -1,31 +1,27 @@
 #!/usr/bin/env python3
 """
-GitHub Contribution Style Shooting Animation
-Clean layout, realistic gun, smooth movement
+Advanced SVG Shooting Game
+- Bullet fires from moving gun nozzle
+- Collision detection
+- Explosion effect
+- Shooting sound
 """
 
 import random
 
 CANVAS_WIDTH = 900
-CANVAS_HEIGHT = 500
+CANVAS_HEIGHT = 300
 
-# Contribution grid
 COLS = 52
 ROWS = 7
 BOX_SIZE = 12
 BOX_GAP = 4
 
-# Gun
 GUN_WIDTH = 50
 GUN_HEIGHT = 60
-BARREL_WIDTH = 8
 BARREL_HEIGHT = 30
 
-BULLET_RADIUS = 4
-
-# Colors (GitHub dark theme style)
 BG_COLOR = "#0d1117"
-TEXT_COLOR = "#c9d1d9"
 GREENS = ["#0e4429", "#006d32", "#26a641", "#39d353"]
 GUN_COLOR = "#58a6ff"
 BULLET_COLOR = "#f85149"
@@ -34,10 +30,9 @@ def generate_svg():
 
     grid_width = COLS * (BOX_SIZE + BOX_GAP)
     grid_x = (CANVAS_WIDTH - grid_width) // 2
-    grid_y = 60
+    grid_y = 40
 
-    gun_start_x = CANVAS_WIDTH // 2 - GUN_WIDTH // 2
-    gun_y = CANVAS_HEIGHT - GUN_HEIGHT - 20
+    gun_y = CANVAS_HEIGHT - GUN_HEIGHT - 10
 
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
     width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}"
@@ -45,101 +40,145 @@ def generate_svg():
 
     <rect width="100%" height="100%" fill="{BG_COLOR}" />
 
-    <text x="{CANVAS_WIDTH//2}" y="35"
-          text-anchor="middle"
-          fill="{TEXT_COLOR}"
-          font-size="20"
-          font-family="monospace">
-        🎯 Contribution Shooter
-    </text>
-
-    <!-- Contribution Grid -->
-    <g id="grid">
+    <g id="boxes">
 '''
 
-    # Contribution boxes
+    # Contribution Grid
     for col in range(COLS):
         for row in range(ROWS):
             x = grid_x + col * (BOX_SIZE + BOX_GAP)
             y = grid_y + row * (BOX_SIZE + BOX_GAP)
             color = random.choice(GREENS)
 
-            fade_delay = random.uniform(2, 10)
-
             svg += f'''
         <rect x="{x}" y="{y}"
               width="{BOX_SIZE}" height="{BOX_SIZE}"
-              fill="{color}" rx="2">
-            <animate attributeName="opacity"
-                     values="1;1;0.2;1"
-                     dur="6s"
-                     begin="{fade_delay}s"
-                     repeatCount="indefinite"/>
-        </rect>
+              fill="{color}" rx="2"/>
 '''
 
-    svg += "\n    </g>\n"
+    svg += '''
+    </g>
 
-    # Gun group (so barrel + base move together)
-    svg += f'''
+    <g id="bullets"></g>
+    <g id="effects"></g>
+
     <!-- Gun -->
     <g id="gun">
-        <animateTransform attributeName="transform"
-            type="translate"
-            values="-150 0; 150 0; -150 0"
-            dur="8s"
-            repeatCount="indefinite"/>
-
-        <!-- Barrel -->
-        <rect x="{gun_start_x + GUN_WIDTH//2 - BARREL_WIDTH//2}"
-              y="{gun_y}"
-              width="{BARREL_WIDTH}"
-              height="{BARREL_HEIGHT}"
-              fill="{GUN_COLOR}" rx="3"/>
-
-        <!-- Base -->
-        <rect x="{gun_start_x}"
-              y="{gun_y + BARREL_HEIGHT}"
-              width="{GUN_WIDTH}"
-              height="{GUN_HEIGHT - BARREL_HEIGHT}"
-              fill="{GUN_COLOR}" rx="6"/>
+        <rect id="barrel"
+              x="425"
+              y="''' + str(gun_y) + '''"
+              width="6"
+              height="''' + str(BARREL_HEIGHT) + '''"
+              fill="''' + GUN_COLOR + '''"/>
+        <rect id="base"
+              x="400"
+              y="''' + str(gun_y + BARREL_HEIGHT) + '''"
+              width="50"
+              height="30"
+              fill="''' + GUN_COLOR + '''" rx="6"/>
     </g>
-'''
 
-    # Bullets
-    for i in range(8):
-        delay = i * 1.2
-        svg += f'''
-    <circle cx="{CANVAS_WIDTH//2}"
-            cy="{gun_y}"
-            r="{BULLET_RADIUS}"
-            fill="{BULLET_COLOR}">
-        <animate attributeName="cy"
-                 from="{gun_y}"
-                 to="40"
-                 dur="2s"
-                 begin="{delay}s"
-                 repeatCount="indefinite"/>
-        <animate attributeName="opacity"
-                 values="0;1;1;0"
-                 dur="2s"
-                 begin="{delay}s"
-                 repeatCount="indefinite"/>
-    </circle>
-'''
+<script><![CDATA[
 
-    svg += "\n</svg>"
+const gun = document.getElementById("gun");
+const bulletsGroup = document.getElementById("bullets");
+const boxesGroup = document.getElementById("boxes");
+const effectsGroup = document.getElementById("effects");
+
+let gunX = 400;
+let direction = 1;
+
+function moveGun() {{
+    gunX += direction * 1.5;
+
+    if (gunX < 200 || gunX > 650)
+        direction *= -1;
+
+    gun.setAttribute("transform", `translate(${gunX-400},0)`);
+    requestAnimationFrame(moveGun);
+}}
+
+moveGun();
+
+// Shooting sound
+function playSound() {{
+    const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+    audio.volume = 0.2;
+    audio.play();
+}}
+
+function shoot() {{
+
+    playSound();
+
+    const bullet = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    bullet.setAttribute("cx", gunX + 25);
+    bullet.setAttribute("cy", ''' + str(gun_y) + ''');
+    bullet.setAttribute("r", 4);
+    bullet.setAttribute("fill", "''' + BULLET_COLOR + '''");
+
+    bulletsGroup.appendChild(bullet);
+
+    let interval = setInterval(() => {{
+
+        let cy = parseFloat(bullet.getAttribute("cy"));
+        bullet.setAttribute("cy", cy - 4);
+
+        const boxes = boxesGroup.querySelectorAll("rect");
+
+        boxes.forEach(box => {{
+            let bx = parseFloat(box.getAttribute("x"));
+            let by = parseFloat(box.getAttribute("y"));
+
+            if (gunX + 25 > bx &&
+                gunX + 25 < bx + {BOX_SIZE} &&
+                cy < by + {BOX_SIZE} &&
+                cy > by) {{
+
+                // Explosion effect
+                const explosion = document.createElementNS("http://www.w3.org/2000/svg","circle");
+                explosion.setAttribute("cx", bx + {BOX_SIZE}/2);
+                explosion.setAttribute("cy", by + {BOX_SIZE}/2);
+                explosion.setAttribute("r", 2);
+                explosion.setAttribute("fill", "orange");
+                effectsGroup.appendChild(explosion);
+
+                explosion.animate([
+                    {{r:2, opacity:1}},
+                    {{r:15, opacity:0}}
+                ], {{
+                    duration:300
+                }});
+
+                box.remove();
+                bullet.remove();
+                clearInterval(interval);
+            }}
+        }});
+
+        if (cy < 0) {{
+            bullet.remove();
+            clearInterval(interval);
+        }}
+
+    }}, 16);
+}}
+
+setInterval(shoot, 900);
+
+]]></script>
+
+</svg>
+'''
 
     return svg
 
 
 def main():
-    svg_content = generate_svg()
-
     with open("shooting-game.svg", "w") as f:
-        f.write(svg_content)
+        f.write(generate_svg())
 
-    print("✅ shooting-game.svg generated successfully!")
+    print("🔥 Advanced shooting-game.svg generated!")
 
 
 if __name__ == "__main__":
