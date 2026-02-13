@@ -78,15 +78,29 @@ def generate_svg():
 
     svg += "\n</g>\n"
 
-    # Gun + Bullets Group
+     # Bullets inside the gun group
     svg += f'''
-    <!-- Gun + Bullets -->
-    <g id="gun">
-        <animateTransform attributeName="transform"
-            type="translate"
-            values="-200 0; 200 0; -200 0"
-            dur="10s"
-            repeatCount="indefinite"/>
+    <!-- Bullets -->
+'''
+    for i in range(8):
+        delay = i * 1.2
+        svg += f'''
+    <circle cx="{gun_start_x + GUN_WIDTH//2}"
+            cy="{gun_y}"
+            r="{BULLET_RADIUS}"
+            fill="{BULLET_COLOR}">
+        <animate attributeName="cy"
+                 from="{gun_y}"
+                 to="40"
+                 dur="2s"
+                 begin="{delay}s"
+                 repeatCount="indefinite"/>
+        <animate attributeName="opacity"
+                 values="0;1;1;0"
+                 dur="2s"
+                 begin="{delay}s"
+                 repeatCount="indefinite"/>
+    </circle>
 
         <!-- Barrel -->
         <rect x="{gun_start_x + GUN_WIDTH//2 - BARREL_WIDTH//2}"
