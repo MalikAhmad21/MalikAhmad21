@@ -1,33 +1,43 @@
 #!/usr/bin/env python3
 """
-Working SVG Shooting Animation (No JS, No Errors)
-Gun moves randomly.
-Boxes fade out and regenerate.
+GitHub Contribution Style Shooting Animation
+Clean layout, realistic gun, smooth movement
 """
 
 import random
 
-CANVAS_WIDTH = 800
-CANVAS_HEIGHT = 420
+CANVAS_WIDTH = 900
+CANVAS_HEIGHT = 500
 
+# Contribution grid
+COLS = 52
+ROWS = 7
 BOX_SIZE = 12
-COLS = 40
-ROWS = 6
+BOX_GAP = 4
 
-GUN_WIDTH = 40
-GUN_HEIGHT = 50
+# Gun
+GUN_WIDTH = 50
+GUN_HEIGHT = 60
+BARREL_WIDTH = 8
+BARREL_HEIGHT = 30
 
 BULLET_RADIUS = 4
 
+# Colors (GitHub dark theme style)
 BG_COLOR = "#0d1117"
-BOX_COLOR = "#26a641"
+TEXT_COLOR = "#c9d1d9"
+GREENS = ["#0e4429", "#006d32", "#26a641", "#39d353"]
 GUN_COLOR = "#58a6ff"
 BULLET_COLOR = "#f85149"
 
-ANIMATION_DURATION = 12
-
-
 def generate_svg():
+
+    grid_width = COLS * (BOX_SIZE + BOX_GAP)
+    grid_x = (CANVAS_WIDTH - grid_width) // 2
+    grid_y = 60
+
+    gun_start_x = CANVAS_WIDTH // 2 - GUN_WIDTH // 2
+    gun_y = CANVAS_HEIGHT - GUN_HEIGHT - 20
 
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
     width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}"
@@ -35,64 +45,87 @@ def generate_svg():
 
     <rect width="100%" height="100%" fill="{BG_COLOR}" />
 
-    <!-- GUN -->
-    <g id="gun">
-        <rect x="{CANVAS_WIDTH//2 - GUN_WIDTH//2}"
-              y="{CANVAS_HEIGHT - GUN_HEIGHT - 10}"
-              width="{GUN_WIDTH}"
-              height="{GUN_HEIGHT}"
-              rx="6"
-              fill="{GUN_COLOR}">
-              
-            <!-- Gun left-right animation -->
-            <animate attributeName="x"
-                     values="50;750;100;700;200;600;400"
+    <text x="{CANVAS_WIDTH//2}" y="35"
+          text-anchor="middle"
+          fill="{TEXT_COLOR}"
+          font-size="20"
+          font-family="monospace">
+        🎯 Contribution Shooter
+    </text>
+
+    <!-- Contribution Grid -->
+    <g id="grid">
+'''
+
+    # Contribution boxes
+    for col in range(COLS):
+        for row in range(ROWS):
+            x = grid_x + col * (BOX_SIZE + BOX_GAP)
+            y = grid_y + row * (BOX_SIZE + BOX_GAP)
+            color = random.choice(GREENS)
+
+            fade_delay = random.uniform(2, 10)
+
+            svg += f'''
+        <rect x="{x}" y="{y}"
+              width="{BOX_SIZE}" height="{BOX_SIZE}"
+              fill="{color}" rx="2">
+            <animate attributeName="opacity"
+                     values="1;1;0.2;1"
                      dur="6s"
+                     begin="{fade_delay}s"
                      repeatCount="indefinite"/>
         </rect>
-    </g>
+'''
 
-    <!-- BULLETS -->
+    svg += "\n    </g>\n"
+
+    # Gun group (so barrel + base move together)
+    svg += f'''
+    <!-- Gun -->
+    <g id="gun">
+        <animateTransform attributeName="transform"
+            type="translate"
+            values="-150 0; 150 0; -150 0"
+            dur="8s"
+            repeatCount="indefinite"/>
+
+        <!-- Barrel -->
+        <rect x="{gun_start_x + GUN_WIDTH//2 - BARREL_WIDTH//2}"
+              y="{gun_y}"
+              width="{BARREL_WIDTH}"
+              height="{BARREL_HEIGHT}"
+              fill="{GUN_COLOR}" rx="3"/>
+
+        <!-- Base -->
+        <rect x="{gun_start_x}"
+              y="{gun_y + BARREL_HEIGHT}"
+              width="{GUN_WIDTH}"
+              height="{GUN_HEIGHT - BARREL_HEIGHT}"
+              fill="{GUN_COLOR}" rx="6"/>
+    </g>
 '''
 
     # Bullets
-    for i in range(10):
-        start_time = i * 0.6
+    for i in range(8):
+        delay = i * 1.2
         svg += f'''
-    <circle cx="{CANVAS_WIDTH//2}" 
-            cy="{CANVAS_HEIGHT - GUN_HEIGHT - 10}"
+    <circle cx="{CANVAS_WIDTH//2}"
+            cy="{gun_y}"
             r="{BULLET_RADIUS}"
             fill="{BULLET_COLOR}">
         <animate attributeName="cy"
-                 from="{CANVAS_HEIGHT - GUN_HEIGHT - 10}"
-                 to="0"
-                 begin="{start_time}s"
+                 from="{gun_y}"
+                 to="40"
                  dur="2s"
-                 repeatCount="indefinite"/>
-    </circle>
-'''
-
-    svg += "\n<!-- BOXES -->\n"
-
-    # Boxes
-    for _ in range(120):
-        x = random.randint(40, CANVAS_WIDTH - 40)
-        y = random.randint(40, 250)
-        delay = random.uniform(1, ANIMATION_DURATION)
-
-        svg += f'''
-    <rect x="{x}" y="{y}"
-          width="{BOX_SIZE}" height="{BOX_SIZE}"
-          fill="{BOX_COLOR}" rx="3">
-
-        <!-- fade out when hit -->
-        <animate attributeName="opacity"
-                 values="1;1;0;1"
-                 keyTimes="0;0.6;0.7;1"
-                 dur="4s"
                  begin="{delay}s"
                  repeatCount="indefinite"/>
-    </rect>
+        <animate attributeName="opacity"
+                 values="0;1;1;0"
+                 dur="2s"
+                 begin="{delay}s"
+                 repeatCount="indefinite"/>
+    </circle>
 '''
 
     svg += "\n</svg>"
