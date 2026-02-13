@@ -1,3 +1,35 @@
+#!/usr/bin/env python3
+"""
+GitHub Contribution Style Shooting Animation
+Clean layout, realistic gun, smooth movement
+"""
+
+import random
+
+CANVAS_WIDTH = 900
+CANVAS_HEIGHT = 330
+
+# Contribution grid
+COLS = 52
+ROWS = 7
+BOX_SIZE = 12
+BOX_GAP = 4
+
+# Gun
+GUN_WIDTH = 50
+GUN_HEIGHT = 60
+BARREL_WIDTH = 8
+BARREL_HEIGHT = 30
+
+BULLET_RADIUS = 4
+
+# Colors (GitHub dark theme style)
+BG_COLOR = "#0d1117"
+TEXT_COLOR = "#c9d1d9"
+GREENS = ["#0e4429", "#006d32", "#26a641", "#39d353"]
+GUN_COLOR = "#58a6ff"
+BULLET_COLOR = "#f85149"
+
 def generate_svg():
     grid_width = COLS * (BOX_SIZE + BOX_GAP)
     grid_x = (CANVAS_WIDTH - grid_width) // 2
@@ -98,3 +130,16 @@ def generate_svg():
     svg += "\n</g>\n</svg>"
 
     return svg
+
+
+def main():
+    svg_content = generate_svg()
+
+    with open("shooting-game.svg", "w") as f:
+        f.write(svg_content)
+
+    print("✅ shooting-game.svg generated successfully!")
+
+
+if __name__ == "__main__":
+    main()
