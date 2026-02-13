@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 GitHub Contribution Style Shooting Animation
-Clean layout, realistic gun, smooth movement
+Gun moves horizontally over the contribution grid
+Bullets fire from gun barrel with independent trajectory
 """
 
 import random
@@ -17,7 +18,7 @@ BOX_GAP = 4
 
 # Gun
 GUN_WIDTH = 50
-GUN_HEIGHT = 50
+GUN_HEIGHT = 60
 BARREL_WIDTH = 8
 BARREL_HEIGHT = 30
 
@@ -36,8 +37,9 @@ def generate_svg():
     grid_x = (CANVAS_WIDTH - grid_width) // 2
     grid_y = 60
 
-    gun_start_x = CANVAS_WIDTH // 2 - GUN_WIDTH // 2
     gun_y = CANVAS_HEIGHT - GUN_HEIGHT - 20
+    gun_start_x = grid_x - GUN_WIDTH  # start left of grid
+    gun_end_x = grid_x + grid_width   # end right of grid
 
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
     width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}"
@@ -71,25 +73,25 @@ def generate_svg():
 
     svg += "\n    </g>\n"
 
-    # Gun group (barrel + base only)
+    # Gun group (barrel + base)
     svg += f'''
     <!-- Gun -->
     <g id="gun">
         <animateTransform attributeName="transform"
             type="translate"
-            values="-150 0; 150 0; -150 0"
-            dur="8s"
+            values="{gun_start_x} 0; {gun_end_x} 0"
+            dur="12s"
             repeatCount="indefinite"/>
 
         <!-- Barrel -->
-        <rect x="{gun_start_x + GUN_WIDTH//2 - BARREL_WIDTH//2}"
+        <rect x="0"  # relative to group
               y="{gun_y}"
               width="{BARREL_WIDTH}"
               height="{BARREL_HEIGHT}"
               fill="{GUN_COLOR}" rx="3"/>
 
         <!-- Base -->
-        <rect x="{gun_start_x}"
+        <rect x="-{GUN_WIDTH//2}"  # relative to group
               y="{gun_y + BARREL_HEIGHT}"
               width="{GUN_WIDTH}"
               height="{GUN_HEIGHT - BARREL_HEIGHT}"
@@ -97,12 +99,11 @@ def generate_svg():
     </g>
 '''
 
-    # Bullets (independent, with gun's current center X)
-    for i in range(8):
-        delay = i * 1.2
-        bullet_x = gun_start_x + GUN_WIDTH//2
+    # Bullets (independent, follow gun's moving X)
+    for i in range(12):
+        delay = i * 0.8
         svg += f'''
-    <circle cx="{bullet_x}"
+    <circle cx="{gun_start_x + GUN_WIDTH//2}"
             cy="{gun_y}"
             r="{BULLET_RADIUS}"
             fill="{BULLET_COLOR}">
@@ -115,6 +116,12 @@ def generate_svg():
         <animate attributeName="opacity"
                  values="0;1;1;0"
                  dur="2s"
+                 begin="{delay}s"
+                 repeatCount="indefinite"/>
+        <animateTransform attributeName="transform"
+                 type="translate"
+                 values="0 0; {grid_width} 0"
+                 dur="12s"
                  begin="{delay}s"
                  repeatCount="indefinite"/>
     </circle>
