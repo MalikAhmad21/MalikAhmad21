@@ -1,8 +1,7 @@
-# Generated files (created by GitHub Actions)
-shooting-game.svg
-dist/
-
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
+- name: Commit SVG
+  run: |
+    git config --global user.name "github-actions"
+    git config --global user.email "actions@github.com"
+    git add -f shooting-game.svg
+    git commit -m "Auto generate SVG" || echo "No changes"
+    git push
