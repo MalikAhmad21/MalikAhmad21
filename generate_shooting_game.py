@@ -101,8 +101,14 @@ def generate_svg():
     # Bullets
     for i in range(8):
         delay = i * 1.2
+          # Bullets inside the gun group
+    svg += f'''
+    <!-- Bullets -->
+'''
+    for i in range(8):
+        delay = i * 1.2
         svg += f'''
-    <circle cx="{CANVAS_WIDTH//2}"
+    <circle cx="{gun_start_x + GUN_WIDTH//2}"
             cy="{gun_y}"
             r="{BULLET_RADIUS}"
             fill="{BULLET_COLOR}">
@@ -119,6 +125,7 @@ def generate_svg():
                  repeatCount="indefinite"/>
     </circle>
 '''
+
 
     svg += "\n</svg>"
 
