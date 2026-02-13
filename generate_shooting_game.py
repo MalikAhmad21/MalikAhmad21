@@ -2,7 +2,7 @@
 """
 GitHub Contribution Style Shooting Animation
 Gun moves horizontally over the contribution grid
-Bullets fire from gun's current position and move independently
+Bullets fire from gun's current position with randomness and independent trajectory
 """
 
 import random
@@ -18,7 +18,7 @@ BOX_GAP = 4
 
 # Gun
 GUN_WIDTH = 50
-GUN_HEIGHT = 50
+GUN_HEIGHT = 60
 BARREL_WIDTH = 8
 BARREL_HEIGHT = 30
 
@@ -99,16 +99,21 @@ def generate_svg():
     </g>
 '''
 
-    # Bullets (spawn from gun barrel position at time of firing)
-    num_bullets = 12
-    fire_interval = 1.0  # seconds between bullets
+    # Bullets (spawn from gun barrel with slight random X offset and speed)
+    num_bullets = 15
+    fire_interval = 0.8  # seconds between bullets
+
     for i in range(num_bullets):
         delay = i * fire_interval
-        # Calculate bullet X relative to gun movement (using same values as gun animation)
-        # We approximate: bullet X = start + ((end - start) * progress) at fire time
-        # SVG animate cannot calculate dynamically, so we precompute start X
-        gun_progress = (delay % 12) / 12  # normalize to gun animation duration
-        bullet_x = gun_start_x + (gun_end_x - gun_start_x) * gun_progress + GUN_WIDTH // 2
+
+        # Random horizontal offset (+/-5 px) and vertical travel distance (to vary speed)
+        x_offset = random.uniform(-5, 5)
+        travel_height = random.uniform(30, 60)
+
+        # Approximate gun X at fire time
+        gun_progress = (delay % 12) / 12
+        bullet_x = gun_start_x + (gun_end_x - gun_start_x) * gun_progress + GUN_WIDTH // 2 + x_offset
+        bullet_end_y = gun_y - travel_height
 
         svg += f'''
     <circle cx="{bullet_x}"
@@ -117,7 +122,7 @@ def generate_svg():
             fill="{BULLET_COLOR}">
         <animate attributeName="cy"
                  from="{gun_y}"
-                 to="40"
+                 to="{bullet_end_y}"
                  dur="2s"
                  begin="{delay}s"
                  repeatCount="indefinite"/>
