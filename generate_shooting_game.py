@@ -18,7 +18,7 @@ BOX_GAP = 4
 
 # Gun
 GUN_WIDTH = 50
-GUN_HEIGHT = 60
+GUN_HEIGHT = 50
 BARREL_WIDTH = 8
 BARREL_HEIGHT = 30
 
@@ -70,7 +70,7 @@ def generate_svg():
         </rect>
 '''
 
-    svg += "\n    </g>\n"
+    svg += "    </g>\n"
 
     # Gun group (barrel + base)
     svg += f'''
@@ -81,16 +81,12 @@ def generate_svg():
             values="{gun_start_x} 0; {gun_end_x} 0; {gun_start_x} 0"
             dur="12s"
             repeatCount="indefinite"/>
-
-        <!-- Barrel -->
-        <rect x="0"  # relative to group
+        <rect x="0"
               y="{gun_y}"
               width="{BARREL_WIDTH}"
               height="{BARREL_HEIGHT}"
               fill="{GUN_COLOR}" rx="3"/>
-
-        <!-- Base -->
-        <rect x="-{GUN_WIDTH//2}"  # relative to group
+        <rect x="-{GUN_WIDTH//2}"
               y="{gun_y + BARREL_HEIGHT}"
               width="{GUN_WIDTH}"
               height="{GUN_HEIGHT - BARREL_HEIGHT}"
@@ -98,16 +94,17 @@ def generate_svg():
     </g>
 '''
 
-    # Bullets (independent, start from gun barrel at firing time)
+    # Bullets (spawn from gun barrel, independent trajectory)
     num_bullets = 15
     fire_interval = 0.8  # seconds
 
     for i in range(num_bullets):
         delay = i * fire_interval
-        # Add slight randomness for realism
         x_offset = random.uniform(-5, 5)
         travel_height = random.uniform(30, 60)
-        bullet_x = gun_start_x + GUN_WIDTH//2 + x_offset
+        # Approximate gun X at fire time (simple linear interpolation)
+        gun_progress = (delay % 12) / 12
+        bullet_x = gun_start_x + (gun_end_x - gun_start_x) * gun_progress + GUN_WIDTH // 2 + x_offset
         bullet_end_y = gun_y - travel_height
 
         svg += f'''
@@ -129,7 +126,7 @@ def generate_svg():
     </circle>
 '''
 
-    svg += "\n</svg>"
+    svg += "</svg>"
 
     return svg
 
