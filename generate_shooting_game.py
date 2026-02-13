@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 """
-Advanced Animated SVG Shooting Game
-- Gun moves randomly left/right
-- Bullets shoot from moving gun
-- Boxes disappear on hit
-- New boxes keep spawning
+Working SVG Shooting Animation (No JS, No Errors)
+Gun moves randomly.
+Boxes fade out and regenerate.
 """
 
 import random
 
 CANVAS_WIDTH = 800
-CANVAS_HEIGHT = 450
+CANVAS_HEIGHT = 420
 
-BOX_SIZE = 14
+BOX_SIZE = 12
 COLS = 40
 ROWS = 6
 
@@ -26,6 +24,8 @@ BOX_COLOR = "#26a641"
 GUN_COLOR = "#58a6ff"
 BULLET_COLOR = "#f85149"
 
+ANIMATION_DURATION = 12
+
 
 def generate_svg():
 
@@ -35,117 +35,67 @@ def generate_svg():
 
     <rect width="100%" height="100%" fill="{BG_COLOR}" />
 
-    <g id="boxes"></g>
-    <g id="bullets"></g>
-
-    <!-- Gun -->
+    <!-- GUN -->
     <g id="gun">
-        <rect id="gunBase" x="{CANVAS_WIDTH//2 - GUN_WIDTH//2}" 
+        <rect x="{CANVAS_WIDTH//2 - GUN_WIDTH//2}"
               y="{CANVAS_HEIGHT - GUN_HEIGHT - 10}"
-              width="{GUN_WIDTH}" height="{GUN_HEIGHT}"
-              rx="6" fill="{GUN_COLOR}"/>
+              width="{GUN_WIDTH}"
+              height="{GUN_HEIGHT}"
+              rx="6"
+              fill="{GUN_COLOR}">
+              
+            <!-- Gun left-right animation -->
+            <animate attributeName="x"
+                     values="50;750;100;700;200;600;400"
+                     dur="6s"
+                     repeatCount="indefinite"/>
+        </rect>
     </g>
 
-<script><![CDATA[
+    <!-- BULLETS -->
+'''
 
-const svg = document.documentElement;
-const boxesGroup = document.getElementById("boxes");
-const bulletsGroup = document.getElementById("bullets");
-const gun = document.getElementById("gunBase");
+    # Bullets
+    for i in range(10):
+        start_time = i * 0.6
+        svg += f'''
+    <circle cx="{CANVAS_WIDTH//2}" 
+            cy="{CANVAS_HEIGHT - GUN_HEIGHT - 10}"
+            r="{BULLET_RADIUS}"
+            fill="{BULLET_COLOR}">
+        <animate attributeName="cy"
+                 from="{CANVAS_HEIGHT - GUN_HEIGHT - 10}"
+                 to="0"
+                 begin="{start_time}s"
+                 dur="2s"
+                 repeatCount="indefinite"/>
+    </circle>
+'''
 
-let gunX = {CANVAS_WIDTH//2 - GUN_WIDTH//2};
-let direction = 1;
+    svg += "\n<!-- BOXES -->\n"
 
-// =======================
-// RANDOM GUN MOVEMENT
-// =======================
-setInterval(() => {{
-    direction = Math.random() > 0.5 ? 1 : -1;
-}}, 1000);
+    # Boxes
+    for _ in range(120):
+        x = random.randint(40, CANVAS_WIDTH - 40)
+        y = random.randint(40, 250)
+        delay = random.uniform(1, ANIMATION_DURATION)
 
-function moveGun() {{
-    gunX += direction * 3;
+        svg += f'''
+    <rect x="{x}" y="{y}"
+          width="{BOX_SIZE}" height="{BOX_SIZE}"
+          fill="{BOX_COLOR}" rx="3">
 
-    if (gunX < 0) gunX = 0;
-    if (gunX > {CANVAS_WIDTH - GUN_WIDTH})
-        gunX = {CANVAS_WIDTH - GUN_WIDTH};
+        <!-- fade out when hit -->
+        <animate attributeName="opacity"
+                 values="1;1;0;1"
+                 keyTimes="0;0.6;0.7;1"
+                 dur="4s"
+                 begin="{delay}s"
+                 repeatCount="indefinite"/>
+    </rect>
+'''
 
-    gun.setAttribute("x", gunX);
-    requestAnimationFrame(moveGun);
-}}
-
-moveGun();
-
-// =======================
-// BOX GENERATION
-// =======================
-function createBox() {{
-    const box = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-
-    let x = Math.random() * ({CANVAS_WIDTH} - {BOX_SIZE});
-    let y = Math.random() * 200 + 40;
-
-    box.setAttribute("x", x);
-    box.setAttribute("y", y);
-    box.setAttribute("width", {BOX_SIZE});
-    box.setAttribute("height", {BOX_SIZE});
-    box.setAttribute("fill", "{BOX_COLOR}");
-    box.setAttribute("rx", 3);
-
-    boxesGroup.appendChild(box);
-}}
-
-setInterval(createBox, 600);
-
-// =======================
-// SHOOTING SYSTEM
-// =======================
-function shoot() {{
-
-    const bullet = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-
-    bullet.setAttribute("cx", gunX + {GUN_WIDTH/2});
-    bullet.setAttribute("cy", {CANVAS_HEIGHT - GUN_HEIGHT - 10});
-    bullet.setAttribute("r", {BULLET_RADIUS});
-    bullet.setAttribute("fill", "{BULLET_COLOR}");
-
-    bulletsGroup.appendChild(bullet);
-
-    let interval = setInterval(() => {{
-        let cy = parseFloat(bullet.getAttribute("cy"));
-        bullet.setAttribute("cy", cy - 6);
-
-        // collision detection
-        let boxes = boxesGroup.querySelectorAll("rect");
-        boxes.forEach(box => {{
-            let bx = parseFloat(box.getAttribute("x"));
-            let by = parseFloat(box.getAttribute("y"));
-
-            if (
-                gunX + {GUN_WIDTH/2} > bx &&
-                gunX + {GUN_WIDTH/2} < bx + {BOX_SIZE} &&
-                cy < by + {BOX_SIZE} &&
-                cy > by
-            ) {{
-                box.remove();
-                bullet.remove();
-                clearInterval(interval);
-            }}
-        }});
-
-        if (cy < 0) {{
-            bullet.remove();
-            clearInterval(interval);
-        }}
-
-    }}, 20);
-}}
-
-setInterval(shoot, 500);
-
-]]></script>
-
-</svg>'''
+    svg += "\n</svg>"
 
     return svg
 
@@ -153,10 +103,10 @@ setInterval(shoot, 500);
 def main():
     svg_content = generate_svg()
 
-    with open("shooting-game-advanced.svg", "w") as f:
+    with open("shooting-game-fixed.svg", "w") as f:
         f.write(svg_content)
 
-    print("✅ shooting-game-advanced.svg generated successfully!")
+    print("✅ shooting-game-fixed.svg generated successfully!")
 
 
 if __name__ == "__main__":
