@@ -2,7 +2,7 @@
 """
 GitHub Contribution Style Shooting Animation
 Gun moves horizontally over the contribution grid
-Bullets fire from gun barrel with independent trajectory
+Bullets fire from gun's current position and move independently
 """
 
 import random
@@ -18,7 +18,7 @@ BOX_GAP = 4
 
 # Gun
 GUN_WIDTH = 50
-GUN_HEIGHT = 60
+GUN_HEIGHT = 50
 BARREL_WIDTH = 8
 BARREL_HEIGHT = 30
 
@@ -38,8 +38,8 @@ def generate_svg():
     grid_y = 60
 
     gun_y = CANVAS_HEIGHT - GUN_HEIGHT - 20
-    gun_start_x = grid_x - GUN_WIDTH  # start left of grid
-    gun_end_x = grid_x + grid_width   # end right of grid
+    gun_start_x = grid_x
+    gun_end_x = grid_x + grid_width - GUN_WIDTH
 
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
     width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}"
@@ -79,7 +79,7 @@ def generate_svg():
     <g id="gun">
         <animateTransform attributeName="transform"
             type="translate"
-            values="{gun_start_x} 0; {gun_end_x} 0"
+            values="{gun_start_x} 0; {gun_end_x} 0; {gun_start_x} 0"
             dur="12s"
             repeatCount="indefinite"/>
 
@@ -99,11 +99,19 @@ def generate_svg():
     </g>
 '''
 
-    # Bullets (independent, follow gun's moving X)
-    for i in range(12):
-        delay = i * 0.8
+    # Bullets (spawn from gun barrel position at time of firing)
+    num_bullets = 12
+    fire_interval = 1.0  # seconds between bullets
+    for i in range(num_bullets):
+        delay = i * fire_interval
+        # Calculate bullet X relative to gun movement (using same values as gun animation)
+        # We approximate: bullet X = start + ((end - start) * progress) at fire time
+        # SVG animate cannot calculate dynamically, so we precompute start X
+        gun_progress = (delay % 12) / 12  # normalize to gun animation duration
+        bullet_x = gun_start_x + (gun_end_x - gun_start_x) * gun_progress + GUN_WIDTH // 2
+
         svg += f'''
-    <circle cx="{gun_start_x + GUN_WIDTH//2}"
+    <circle cx="{bullet_x}"
             cy="{gun_y}"
             r="{BULLET_RADIUS}"
             fill="{BULLET_COLOR}">
@@ -116,12 +124,6 @@ def generate_svg():
         <animate attributeName="opacity"
                  values="0;1;1;0"
                  dur="2s"
-                 begin="{delay}s"
-                 repeatCount="indefinite"/>
-        <animateTransform attributeName="transform"
-                 type="translate"
-                 values="0 0; {grid_width} 0"
-                 dur="12s"
                  begin="{delay}s"
                  repeatCount="indefinite"/>
     </circle>
