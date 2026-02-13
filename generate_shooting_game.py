@@ -2,7 +2,7 @@
 """
 GitHub Contribution Style Shooting Animation
 Gun moves horizontally over the contribution grid
-Bullets fire from gun's current position with randomness and independent trajectory
+Bullets fire from gun barrel with independent trajectory and slight randomness
 """
 
 import random
@@ -38,8 +38,8 @@ def generate_svg():
     grid_y = 60
 
     gun_y = CANVAS_HEIGHT - GUN_HEIGHT - 20
-    gun_start_x = grid_x
-    gun_end_x = grid_x + grid_width - GUN_WIDTH
+    gun_start_x = grid_x - GUN_WIDTH
+    gun_end_x = grid_x + grid_width
 
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
     width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}"
@@ -58,7 +58,6 @@ def generate_svg():
             y = grid_y + row * (BOX_SIZE + BOX_GAP)
             color = random.choice(GREENS)
             fade_delay = random.uniform(2, 10)
-
             svg += f'''
         <rect x="{x}" y="{y}"
               width="{BOX_SIZE}" height="{BOX_SIZE}"
@@ -99,20 +98,16 @@ def generate_svg():
     </g>
 '''
 
-    # Bullets (spawn from gun barrel with slight random X offset and speed)
+    # Bullets (independent, start from gun barrel at firing time)
     num_bullets = 15
-    fire_interval = 0.8  # seconds between bullets
+    fire_interval = 0.8  # seconds
 
     for i in range(num_bullets):
         delay = i * fire_interval
-
-        # Random horizontal offset (+/-5 px) and vertical travel distance (to vary speed)
+        # Add slight randomness for realism
         x_offset = random.uniform(-5, 5)
         travel_height = random.uniform(30, 60)
-
-        # Approximate gun X at fire time
-        gun_progress = (delay % 12) / 12
-        bullet_x = gun_start_x + (gun_end_x - gun_start_x) * gun_progress + GUN_WIDTH // 2 + x_offset
+        bullet_x = gun_start_x + GUN_WIDTH//2 + x_offset
         bullet_end_y = gun_y - travel_height
 
         svg += f'''
@@ -138,15 +133,11 @@ def generate_svg():
 
     return svg
 
-
 def main():
     svg_content = generate_svg()
-
     with open("shooting-game.svg", "w") as f:
         f.write(svg_content)
-
     print("✅ shooting-game.svg generated successfully!")
-
 
 if __name__ == "__main__":
     main()
