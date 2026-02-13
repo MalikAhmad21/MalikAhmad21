@@ -103,10 +103,10 @@ def generate_svg():
 def main():
     svg_content = generate_svg()
 
-    with open("shooting-game-fixed.svg", "w") as f:
+    with open("shooting-game.svg", "w") as f:
         f.write(svg_content)
 
-    print("✅ shooting-game-fixed.svg generated successfully!")
+    print("✅ shooting-game.svg generated successfully!")
 
 
 if __name__ == "__main__":
