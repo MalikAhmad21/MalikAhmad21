@@ -17,7 +17,7 @@ BOX_GAP = 4
 
 # Gun
 GUN_WIDTH = 50
-GUN_HEIGHT = 40
+GUN_HEIGHT = 50
 BARREL_WIDTH = 8
 BARREL_HEIGHT = 30
 
@@ -55,7 +55,6 @@ def generate_svg():
             x = grid_x + col * (BOX_SIZE + BOX_GAP)
             y = grid_y + row * (BOX_SIZE + BOX_GAP)
             color = random.choice(GREENS)
-
             fade_delay = random.uniform(2, 10)
 
             svg += f'''
@@ -72,7 +71,7 @@ def generate_svg():
 
     svg += "\n    </g>\n"
 
-    # Gun group (so barrel + base + bullets move together)
+    # Gun group (barrel + base only)
     svg += f'''
     <!-- Gun -->
     <g id="gun">
@@ -95,31 +94,32 @@ def generate_svg():
               width="{GUN_WIDTH}"
               height="{GUN_HEIGHT - BARREL_HEIGHT}"
               fill="{GUN_COLOR}" rx="6"/>
+    </g>
 '''
 
-    # Bullets inside gun group
+    # Bullets (independent, with gun's current center X)
     for i in range(8):
         delay = i * 1.2
+        bullet_x = gun_start_x + GUN_WIDTH//2
         svg += f'''
-        <circle cx="{gun_start_x + GUN_WIDTH//2}"
-                cy="{gun_y}"
-                r="{BULLET_RADIUS}"
-                fill="{BULLET_COLOR}">
-            <animate attributeName="cy"
-                     from="{gun_y}"
-                     to="40"
-                     dur="2s"
-                     begin="{delay}s"
-                     repeatCount="indefinite"/>
-            <animate attributeName="opacity"
-                     values="0;1;1;0"
-                     dur="2s"
-                     begin="{delay}s"
-                     repeatCount="indefinite"/>
-        </circle>
+    <circle cx="{bullet_x}"
+            cy="{gun_y}"
+            r="{BULLET_RADIUS}"
+            fill="{BULLET_COLOR}">
+        <animate attributeName="cy"
+                 from="{gun_y}"
+                 to="40"
+                 dur="2s"
+                 begin="{delay}s"
+                 repeatCount="indefinite"/>
+        <animate attributeName="opacity"
+                 values="0;1;1;0"
+                 dur="2s"
+                 begin="{delay}s"
+                 repeatCount="indefinite"/>
+    </circle>
 '''
 
-    svg += "\n    </g>\n"  # close gun group
     svg += "\n</svg>"
 
     return svg
