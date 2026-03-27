@@ -23,6 +23,18 @@
 > Filter used: Next.js App Router projects, Prisma ORM, 100+ stars, permissive license (MIT), and recently updated.  
 > Stars/recency snapshot: 2026-03-27.
 
+### 🚀 Top Best & Related Links (Quick Access)
+
+**Top Best (start here)**
+1. [next-saas-stripe-starter](https://github.com/mickasmt/next-saas-stripe-starter) — strongest overall for Auth.js + Prisma + Stripe billing/webhooks + admin patterns.
+2. [chadnext](https://github.com/moinulmoin/chadnext) — great Lucia + Prisma + Stripe + OTP/email template reference.
+3. [nextcrm-app](https://github.com/pdovhomilja/nextcrm-app) — best production-style admin/CRM architecture and transactional email patterns.
+
+**Related Links**
+- [next-auth-roles-template](https://github.com/mickasmt/next-auth-roles-template)
+- [saasy-land](https://github.com/pjborowiecki/saasy-land)
+- [codebaseup-core](https://github.com/jhavej/codebaseup-core)
+
 | Repository | Stars | Reuse Best For | Files/Folders to Study |
 |---|---:|---|---|
 | [mickasmt/next-saas-stripe-starter](https://github.com/mickasmt/next-saas-stripe-starter) | 2968 | Auth.js + Prisma JWT session flow, RBAC/admin patterns, SaaS billing (Stripe checkout, webhooks, customer portal), React Email/Resend setup | `auth.ts`, `prisma/schema.prisma`, `app/api/webhooks/stripe/route.ts`, `actions/generate-user-stripe.ts`, `actions/open-customer-portal.ts`, `app/(protected)/admin`, `app/(protected)/dashboard`, `lib/subscription.ts`, `lib/stripe.ts`, `lib/email.ts`, `emails/magic-link-email.tsx` |
