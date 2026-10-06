@@ -1,5 +1,5 @@
 # 💫 About Me:
-🔭 I’m currently working on App Development<br>🌱 I’m currently Study Computer Science
+🔭 App Developer<br>🌱 Computer Science Graduate
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/MalikAhmad21/MalikAhmad21/output/shooting-game.svg" alt="Shooting Game Animation" width="800" />
